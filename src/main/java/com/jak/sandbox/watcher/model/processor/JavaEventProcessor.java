@@ -7,6 +7,7 @@ public class JavaEventProcessor implements EventProcessor {
 
     private final Object instance;
     private final Method declaredMethod;
+    private boolean defaultMethod;
     private String className;
     private String methodName;
     private String param1;
@@ -17,8 +18,9 @@ public class JavaEventProcessor implements EventProcessor {
 
         if (methodName == null || methodName.isEmpty()) {
             this.methodName = "main";
+            this.defaultMethod = true;
         }
-        String[] split = methodName.split(",");
+        String[] split = this.methodName.split(",");
         this.methodName = split[0];
         if (split.length > 1) {
             this.param1 = split[1];
@@ -35,6 +37,8 @@ public class JavaEventProcessor implements EventProcessor {
                 declaredMethod = aClass.getDeclaredMethod(this.methodName, String.class, String.class);
             } else if (this.param1 != null) {
                 declaredMethod = aClass.getDeclaredMethod(this.methodName, String.class);
+            } else if (this.defaultMethod) {
+                declaredMethod = aClass.getDeclaredMethod(this.methodName, String[].class);
             } else {
                 declaredMethod = aClass.getDeclaredMethod(this.methodName);
             }
@@ -59,7 +63,24 @@ public class JavaEventProcessor implements EventProcessor {
     @Override
     public void execute(String name, String path) {
         try {
-            declaredMethod.invoke(instance, name, path);
+            if (this.param2 != null) {
+                if (param2.equals("RESOURCE")) {
+                    declaredMethod.invoke(instance, name, path);
+                } else {
+                    declaredMethod.invoke(instance, path, name);
+                }
+            } else if (this.param1 != null) {
+                if (param1.equals("RESOURCE")) {
+                    declaredMethod.invoke(instance, path);
+                } else {
+                    declaredMethod.invoke(instance, name);
+                }
+            } else if (this.defaultMethod) {
+                // default main method is static, hence null
+                declaredMethod.invoke(null, (Object) new String[] { name, path });
+            } else {
+                declaredMethod.invoke(instance);
+            }
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e.getMessage(), e);
         } catch (InvocationTargetException e) {

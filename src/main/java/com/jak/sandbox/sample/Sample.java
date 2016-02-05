@@ -3,7 +3,7 @@ package com.jak.sandbox.sample;
 public class Sample {
 
     public static void main(String[] args) {
-        System.out.println("Sample::main called");
+        System.out.println(String.format("Sample::main called with args %s & %s", args[0], args[1]));
     }
 
     public void someMethod() {
