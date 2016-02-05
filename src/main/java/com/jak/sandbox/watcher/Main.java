@@ -1,5 +1,6 @@
 package com.jak.sandbox.watcher;
 
+import com.jak.sandbox.watcher.helper.Utils;
 import com.jak.sandbox.watcher.model.WatchWorker;
 import com.jak.sandbox.watcher.model.WatcherConfig;
 import com.jak.sandbox.watcher.model.processor.JavaEventProcessor;
@@ -9,13 +10,7 @@ import com.jak.sandbox.watcher.model.processor.ShellScriptEventProcessor;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -29,41 +24,55 @@ public class Main {
     private static Long WATCH_TIME;
     private static TimeUnit WATCH_TIME_UNIT;
 
-    public static void main(String[] args) throws IOException, InterruptedException {
-        parseProperties(args[0]);
+    public static void main(String[] args) {
+        configure();
+
         if (watcherConfigs.isEmpty()) {
             return;
         }
 
         ExecutorService executor = Executors.newFixedThreadPool(watcherConfigs.size());
-
-        List<Future<?>> futures = new ArrayList<>();
-        for (WatcherConfig watcherConfig : watcherConfigs.values()) {
-            System.out.println(watcherConfig);
-            futures.add(executor.submit(new WatchWorker(watcherConfig)));
-        }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-        System.out.println(sdf.format(new Date()));
-        executor.awaitTermination(WATCH_TIME, WATCH_TIME_UNIT);
-        System.out.println("Shutting down executor");
-        executor.shutdown();
-        for (Future<?> future : futures) {
-            future.cancel(true);
+        List<Future<?>> futures = new ArrayList<>();
+        try {
+            for (WatcherConfig watcherConfig : watcherConfigs.values()) {
+                System.out.println(watcherConfig);
+                futures.add(executor.submit(new WatchWorker(watcherConfig)));
+            }
+            System.out.println(sdf.format(new Date()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                executor.awaitTermination(WATCH_TIME, WATCH_TIME_UNIT);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("Shutting down executor");
+            executor.shutdown();
+            for (Future<?> future : futures) {
+                future.cancel(true);
+            }
         }
-
         System.out.println(sdf.format(new Date()));
         System.out.println("Done shutting down executor");
     }
 
-    private static void parseProperties(String arg) {
+    private static void configure() {
+        String configFile = System.getProperty("watcher.config");
+        if (Utils.isEmpty(configFile)) {
+            throw new RuntimeException("Missing property watcher.config. Please provide the watcher config file using as -Dwatcher.config system property");
+        }
         Properties props = new Properties();
         try {
-            props.load(new FileInputStream(arg));
+            props.load(new FileInputStream(configFile));
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
-        WATCH_TIME = Long.valueOf(props.getProperty("watcher.watch.time", "1"));
-        String unit = props.getProperty("watcher.watch.time.unit", "M");
+        String timeDuration = "watcher.watch.time.duration";
+        String timeUnit = "watcher.watch.time.unit";
+        WATCH_TIME = Long.valueOf(props.getProperty(timeDuration, "1"));
+        String unit = props.getProperty(timeUnit, "M");
         switch (unit) {
             case "M":
                 WATCH_TIME_UNIT = TimeUnit.MINUTES;
@@ -80,8 +89,8 @@ public class Main {
             default:
                 throw new RuntimeException(String.format("Invalid Configuration: Unknown watch time unit %s", unit));
         }
-        props.remove("watcher.watch.time");
-        props.remove("watcher.watch.time.unit");
+        props.remove(timeDuration);
+        props.remove(timeUnit);
         Enumeration propNames = props.propertyNames();
         while (propNames.hasMoreElements()) {
             String propName = (String) propNames.nextElement();
@@ -98,7 +107,7 @@ public class Main {
         WatcherConfig watcherConfig = WatcherConfig.withName(watcherName)
                 .watch(watcherNameKey + ".watch", props.getProperty(watcherNameKey + ".watch"))
                 .withEvents(watcherName + ".events", props.getProperty(watcherNameKey + ".events"))
-                .withRecursive(props.getProperty(watcherNameKey + ".recursive")).withLogFile(props.getProperty(watcherNameKey + ".logfile"));
+                .withRecursive(props.getProperty(watcherNameKey + ".recursive")).withLogFile(watcherName, props.getProperty(watcherNameKey + ".logfile"));
         String type = props.getProperty(watcherNameKey + ".eventprocessor.type");
         if (type != null) {
             switch (type) {

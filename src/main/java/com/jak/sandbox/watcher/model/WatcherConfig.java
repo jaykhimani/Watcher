@@ -2,6 +2,9 @@ package com.jak.sandbox.watcher.model;
 
 import com.jak.sandbox.watcher.model.processor.EventProcessor;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.WatchEvent.Kind;
 import java.util.ArrayList;
@@ -15,8 +18,8 @@ public class WatcherConfig {
     private String whatToWatch;
     private List<Kind<Path>> events = new ArrayList<>();
     private boolean recursive;
-    private String logfile;
     private EventProcessor eventProcessor;
+    private PrintWriter logWriter;
 
     private WatcherConfig(String name) {
         this.name = name;
@@ -65,9 +68,17 @@ public class WatcherConfig {
         return this;
     }
 
-    public WatcherConfig withLogFile(String property) {
+    public WatcherConfig withLogFile(String watcherName, String property) {
         if (property != null && !property.isEmpty()) {
-            logfile = property;
+            String logFile = property + "/" + watcherName + ".log";
+            File file = new File(logFile);
+            try {
+                file.getParentFile().mkdirs();
+                file.createNewFile();
+                logWriter = new PrintWriter(file);
+            } catch (IOException e) {
+                throw new RuntimeException(e.getMessage(), e);
+            }
         }
         return this;
     }
@@ -88,8 +99,8 @@ public class WatcherConfig {
         return recursive;
     }
 
-    public String getLogfile() {
-        return logfile;
+    public PrintWriter getLogWriter() {
+        return logWriter;
     }
 
     public String getWhatToWatch() {
@@ -102,7 +113,19 @@ public class WatcherConfig {
 
     @Override
     public String toString() {
-        return "WatcherConfig{" + "name='" + name + '\'' + ", whatToWatch='" + whatToWatch + '\'' + ", events=" + events + ", recursive=" + recursive
-                + ", logfile='" + logfile + '\'' + ", eventProcessor=" + eventProcessor + '}';
+        return "WatcherConfig{" +
+                "name='" + name + '\'' +
+                ", whatToWatch='" + whatToWatch + '\'' +
+                ", events=" + events +
+                ", recursive=" + recursive +
+                ", eventProcessor=" + eventProcessor +
+                ", logWriter=" + logWriter +
+                '}';
+    }
+
+    public void clean() {
+        if (logWriter != null) {
+            logWriter.close();
+        }
     }
 }

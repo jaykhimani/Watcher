@@ -1,18 +1,12 @@
 package com.jak.sandbox.watcher.model;
 
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.WatchEvent;
+import java.io.PrintWriter;
+import java.nio.file.*;
 import java.nio.file.WatchEvent.Kind;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,8 +14,9 @@ import java.util.Map;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
-public class WatchWorker implements Runnable {
+public class WatchWorker extends Thread {
 
+    private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
     private final WatchService watcher;
     private final WatcherConfig watcherConfig;
     private final Map<WatchKey, Path> keys;
@@ -36,6 +31,12 @@ public class WatchWorker implements Runnable {
         } else {
             register(path);
         }
+    }
+
+    @Override
+    public void interrupt() {
+        super.interrupt();
+        System.out.println("bangggggggggggggggg");
     }
 
     private void registerRecursive(Path path) throws IOException {
@@ -62,12 +63,13 @@ public class WatchWorker implements Runnable {
 
     @Override
     public void run() {
-        for (;;) {
+        for (; ; ) {
             // wait for key to be signalled
             WatchKey key;
             try {
                 key = watcher.take();
             } catch (InterruptedException x) {
+                watcherConfig.clean();
                 return;
             }
 
@@ -91,8 +93,17 @@ public class WatchWorker implements Runnable {
                 Path child = dir.resolve(name);
 
                 // print out event
-                System.out.format("%s: %s\n", event.kind().name(), child);
-                this.watcherConfig.getEventProcessor().execute(event.kind().name(), child.toString());
+                String eventName = event.kind().name();
+                eventName = eventName.replaceFirst("ENTRY_", "");
+                String logMsg = SDF.format(new Date()) + "," + eventName + "," + child.toString();
+                PrintWriter logWriter = watcherConfig.getLogWriter();
+                if (logWriter == null) {
+                    System.out.println(logMsg);
+                } else {
+                    logWriter.println(logMsg);
+                    logWriter.flush();
+                }
+                this.watcherConfig.getEventProcessor().execute(eventName, child.toString());
 
                 // if directory is created, and watching recursively, then
                 // register it and its sub-directories
@@ -120,6 +131,7 @@ public class WatchWorker implements Runnable {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private <T> WatchEvent<T> cast(WatchEvent<?> event) {
         return (WatchEvent<T>) event;
     }
