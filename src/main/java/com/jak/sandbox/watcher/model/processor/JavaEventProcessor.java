@@ -15,11 +15,13 @@ public class JavaEventProcessor implements EventProcessor {
 
     public JavaEventProcessor(String className, String methodName) {
         this.className = className;
+        this.methodName = methodName;
 
         if (methodName == null || methodName.isEmpty()) {
             this.methodName = "main";
             this.defaultMethod = true;
         }
+
         String[] split = this.methodName.split(",");
         this.methodName = split[0];
         if (split.length > 1) {
@@ -88,16 +90,17 @@ public class JavaEventProcessor implements EventProcessor {
         }
     }
 
-    public String getClassName() {
-        return className;
-    }
-
-    public String getMethodName() {
-        return methodName;
-    }
-
     @Override
     public String toString() {
-        return "JavaEventProcessor{" + "className='" + className + '\'' + ", methodName='" + methodName + '\'' + '}';
+        final StringBuilder sb = new StringBuilder("JavaEventProcessor{");
+        sb.append("instance=").append(instance);
+        sb.append(", declaredMethod=").append(declaredMethod);
+        sb.append(", defaultMethod=").append(defaultMethod);
+        sb.append(", className='").append(className).append('\'');
+        sb.append(", methodName='").append(methodName).append('\'');
+        sb.append(", param1='").append(param1).append('\'');
+        sb.append(", param2='").append(param2).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }

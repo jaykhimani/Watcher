@@ -29,11 +29,11 @@ public class WatcherConfig {
         return new WatcherConfig(watcherName);
     }
 
-    public WatcherConfig watch(String property, String dirOrFile) {
-        if (dirOrFile == null || dirOrFile.isEmpty()) {
-            throw new RuntimeException(String.format("Invalid Configuration: Define to to monitor/watch for key %s", property));
+    public WatcherConfig watch(String property, String directory) {
+        if (directory == null || directory.isEmpty()) {
+            throw new RuntimeException(String.format("Invalid Configuration: Define what to monitor/watch for key %s", property));
         }
-        whatToWatch = dirOrFile;
+        whatToWatch = directory;
         return this;
     }
 
@@ -86,8 +86,9 @@ public class WatcherConfig {
         return this;
     }
 
-    public void withEventProcessor(EventProcessor eventProc) {
+    public WatcherConfig withEventProcessor(EventProcessor eventProc) {
         this.eventProcessor = eventProc;
+        return this;
     }
 
     public String getName() {
