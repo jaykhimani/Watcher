@@ -39,7 +39,10 @@ public class WatcherConfig {
 
     public WatcherConfig withEvents(String property, String value) {
         if (value == null || value.isEmpty()) {
-            throw new RuntimeException(String.format("Invalid Configuration: Events to watch not specified for key %s", property));
+            events.add(ENTRY_CREATE);
+            events.add(ENTRY_DELETE);
+            events.add(ENTRY_MODIFY);
+            return this;
         }
         String[] eventNames = value.split(",");
         for (String event : eventNames) {
