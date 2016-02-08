@@ -5,9 +5,7 @@ import com.jak.sandbox.watcher.model.processor.EventProcessor;
 import com.jak.sandbox.watcher.model.processor.ProcessorType;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -15,9 +13,7 @@ import java.nio.file.WatchEvent.Kind;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
-import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
-import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
+import static java.nio.file.StandardWatchEventKinds.*;
 import static org.junit.Assert.*;
 
 public class WatcherConfigTest extends BaseTest {
@@ -25,9 +21,6 @@ public class WatcherConfigTest extends BaseTest {
     public static final String MY_WATCHER = "MyWatcher";
     private WatcherConfig watcherConfig;
     public static final String LOG_DIR = "target";
-
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
 
     @Before
     public void setUp() {
@@ -107,8 +100,7 @@ public class WatcherConfigTest extends BaseTest {
 
     @Test
     public void createEventFail() {
-        expectedException.expect(RuntimeException.class);
-        expectedException.expectMessage("Invalid Configuration: Unknown event type bla bla for key MyWatcher");
+        expectRuntimeException("Invalid Configuration: Unknown event type bla bla for key MyWatcher");
         this.watcherConfig.withEvents(MY_WATCHER, "bla bla");
     }
 
@@ -139,15 +131,13 @@ public class WatcherConfigTest extends BaseTest {
 
     @Test
     public void watchFailEmpty() {
-        expectedException.expect(RuntimeException.class);
-        expectedException.expectMessage("Invalid Configuration: Define what to monitor/watch for key " + MY_WATCHER);
+        expectRuntimeException("Invalid Configuration: Define what to monitor/watch for key " + MY_WATCHER);
         watcherConfig.watch(MY_WATCHER, "");
     }
 
     @Test
     public void watchFailNull() {
-        expectedException.expect(RuntimeException.class);
-        expectedException.expectMessage("Invalid Configuration: Define what to monitor/watch for key " + MY_WATCHER);
+        expectRuntimeException("Invalid Configuration: Define what to monitor/watch for key " + MY_WATCHER);
         watcherConfig.watch(MY_WATCHER, null);
     }
 

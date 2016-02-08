@@ -31,7 +31,7 @@ public class JavaEventProcessor implements EventProcessor {
             this.param2 = split[2];
         }
 
-        Class<?> aClass = null;
+        Class<?> aClass;
         try {
             aClass = Class.forName(className);
             instance = aClass.newInstance();
@@ -46,13 +46,13 @@ public class JavaEventProcessor implements EventProcessor {
             }
             declaredMethod.setAccessible(true);
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new RuntimeException(String.format("Invalid Configuration: Java class not found '%s'", className), e);
         } catch (InstantiationException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new RuntimeException(String.format("Invalid Configuration: Cannot instantiate class '%s'", className), e);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new RuntimeException(String.format("Invalid Configuration: Cannot access class '%s'", className), e);
         } catch (NoSuchMethodException e) {
-            throw new RuntimeException(String.format("Invalid Configuration: %s method not found for event processor class %s.", this.methodName,
+            throw new RuntimeException(String.format("Invalid Configuration: '%s' method not found for event processor class '%s'.", this.methodName,
                     this.className), e);
         }
     }

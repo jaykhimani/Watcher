@@ -1,11 +1,22 @@
 package com.jak.sandbox.watcher;
 
+import org.junit.Rule;
+import org.junit.rules.ExpectedException;
+
 import java.lang.reflect.Field;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 public abstract class BaseTest {
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
+    protected void expectRuntimeException(String substring) {
+        expectedException.expect(RuntimeException.class);
+        expectedException.expectMessage(substring);
+    }
 
     protected void assertAllNull(Object instance, String... fieldNames) throws NoSuchFieldException, IllegalAccessException {
         assertNotNull(instance);
