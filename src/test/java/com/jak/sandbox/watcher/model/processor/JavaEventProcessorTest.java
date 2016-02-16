@@ -6,7 +6,6 @@ import com.jak.sandbox.watcher.Main;
 import com.jak.sandbox.watcher.helper.Utils;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Mock;
 
 import java.lang.reflect.Field;
 
@@ -15,9 +14,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class JavaEventProcessorTest extends BaseTest {
-
-    @Mock
-    private Sample sample;
 
     private JavaEventProcessor victim;
 
@@ -103,8 +99,7 @@ public class JavaEventProcessorTest extends BaseTest {
     }
 
     @Test
-    @Ignore("Implement me")
+    @Ignore("Implement me. figure out way to test this")
     public void execute() {
-
     }
 }

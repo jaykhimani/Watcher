@@ -14,6 +14,13 @@ Features/Options
 -	Configuration Properties File: You can provide elaborate configuration using a properties file. With this you can even configure multiple directories to be monitored and post processed differently (or not at all)
 -	Utility can also optionally generate log files capturing each event and affected resource - directory or file.
 
+Usage
+------
+
+-	Using maven - `mvn exec:java -Dexec.mainClass=com.jak.sandbox.watcher.Main -Dwatcher.config=<PathTo_wrapper_config_file>`
+-   Using standalone jar file as self executable
+
+
 References
 ----------
 
