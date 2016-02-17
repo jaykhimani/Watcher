@@ -10,7 +10,12 @@ import com.jak.sandbox.watcher.model.processor.ShellScriptEventProcessor;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -21,10 +26,12 @@ public class Main {
 
     private static final String DOT = Pattern.quote(".");
     private static final Map<String, WatcherConfig> watcherConfigs = new HashMap<>();
+    private static final String WATCHER_CONFIG = "watcher.config";
     private static Long WATCH_TIME;
     private static TimeUnit WATCH_TIME_UNIT;
 
     public static void main(String[] args) {
+        validateJavaVersion();
         configure();
 
         if (watcherConfigs.isEmpty()) {
@@ -34,12 +41,14 @@ public class Main {
         ExecutorService executor = Executors.newFixedThreadPool(watcherConfigs.size());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
         List<Future<?>> futures = new ArrayList<>();
+        System.out.println("====================================================================");
+        System.out.println(String.format("| Starting Watcher for %d %s with following watcher(s)...", WATCH_TIME, WATCH_TIME_UNIT));
         try {
             for (WatcherConfig watcherConfig : watcherConfigs.values()) {
-                System.out.println(watcherConfig);
+                print(watcherConfig);
                 futures.add(executor.submit(new WatchWorker(watcherConfig)));
             }
-            System.out.println(sdf.format(new Date()));
+            System.out.println("====================================================================");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -48,20 +57,34 @@ public class Main {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.out.println("Shutting down executor");
             executor.shutdown();
             for (Future<?> future : futures) {
                 future.cancel(true);
             }
+            System.out.println("Watcher stopped");
         }
-        System.out.println(sdf.format(new Date()));
-        System.out.println("Done shutting down executor");
+    }
+
+    private static void print(WatcherConfig config) {
+        System.out.println("| -----------------------------------------------------------------");
+        System.out.println(String.format("| Name   : %s", config.getName()));
+        System.out.println(String.format("| Monitor: %s", config.getWhatToWatch()));
+        System.out.println(String.format("| Events : %s", config.getEvents()));
+    }
+
+    private static void validateJavaVersion() {
+        String version = System.getProperty("java.version");
+        float ver = Float.parseFloat(version.substring(0, 3));
+        if (ver < 1.7) {
+            throw new RuntimeException("Please use Java 7 or higher to use Watcher.");
+        }
     }
 
     private static void configure() {
-        String configFile = System.getProperty("watcher.config");
+        String configFile = System.getProperty(WATCHER_CONFIG);
         if (Utils.isEmpty(configFile)) {
-            throw new RuntimeException("Missing property watcher.config. Please provide the watcher config file using as -Dwatcher.config system property");
+            throw new RuntimeException(String.format("Missing property %s. Please provide the watcher config file as -D%s system property",
+                    WATCHER_CONFIG, WATCHER_CONFIG));
         }
         Properties props = new Properties();
         try {
@@ -107,7 +130,8 @@ public class Main {
         WatcherConfig watcherConfig = WatcherConfig.withName(watcherName)
                 .watch(watcherNameKey + ".watch", props.getProperty(watcherNameKey + ".watch"))
                 .withEvents(watcherName + ".events", props.getProperty(watcherNameKey + ".events"))
-                .withRecursive(props.getProperty(watcherNameKey + ".recursive")).withLogFile(watcherName, props.getProperty(watcherNameKey + ".logfile"));
+                .withRecursive(props.getProperty(watcherNameKey + ".recursive"))
+                .withLogFile(watcherName, props.getProperty(watcherNameKey + ".logfile"));
         String type = props.getProperty(watcherNameKey + ".eventprocessor.type");
         if (type != null) {
             switch (type) {

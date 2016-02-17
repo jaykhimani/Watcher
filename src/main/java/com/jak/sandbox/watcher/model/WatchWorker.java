@@ -23,7 +23,7 @@ import java.util.Map;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
-public class WatchWorker extends Thread {
+public class WatchWorker implements Runnable {
 
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
     private final WatchService watcher;
@@ -40,12 +40,6 @@ public class WatchWorker extends Thread {
         } else {
             register(path);
         }
-    }
-
-    @Override
-    public void interrupt() {
-        super.interrupt();
-        System.out.println("bangggggggggggggggg");
     }
 
     private void registerRecursive(Path path) throws IOException {
@@ -122,7 +116,7 @@ public class WatchWorker extends Thread {
                             registerRecursive(child);
                         }
                     } catch (IOException x) {
-                        // ignore to keep sample readbale
+                        // ignore to keep sample readable
                     }
                 }
             }

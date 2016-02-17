@@ -64,9 +64,45 @@ Usage
 	-	Example: `watcher.java.logfile=/tmp/watcherlog`
 -	`watcher.<name>.eventprocessor.type=<type>`: Type of the event post processor
 	-	Optional: true
+	-	Supported values: `java/python/shell`
 	-	Example: `watcher.java.eventprocessor.type=java`
+-	Type `java`:
+	-	`watcher.<name>.eventprocessor.class=<class_name>`
+		-	Optional: conditional - Required if `watcher.<name>.eventprocessor.type` is defined and value is defined as `java`.
+		-	`<class_name>`: Fully qualified class name. Ensure that this class and any other required dependencies are in classpath of watcher.
+		-	Example: `watcher.java.eventprocessor.class=com.jak.sandbox.sample.Sample`
+	-	`watcher.<name>.eventprocessor.method=<method_name>[,EVENT/RESOURCE][,RESOURCE/EVENT]`:
+		-	Optional: true
+		-	Considered only if `watcher.<name>.eventprocessor.type` is defined and value is defined as `java`.
+		-	If this key is no defined, watcher will invoke default `main` method of the class.
+		-	If this key is defined...
+			-	`<method_name>`: Name of the method to invoke.
+			-	If event name and/or resource name are required they can be defined with keywords `EVENT` & `RESOURCE`.
+		-	Examples
+			1.	`watcher.java.eventprocessor.method=someMethod`: Invokes `someMethod` method with no parameters.
+			2.	`watcher.java.eventprocessor.method=someMethod,EVENT`: Invokes `someMethod` method with one `String` parameter which will hold name of the event - `CREATE/DELETE/MODIFY`.
+			3.	`watcher.java.eventprocessor.method=someMethod,RESOURCE,EVENT`: Invokes `someMethod` method with two `String` parameters. First parameter will hold value of the affected resource and second parameter will hold value as the name of the event.
+-	Type `python`:
+	-	`watcher.<name>.eventprocessor.script=<script_path>`: Defines script name with full path on file system which will be invoked as python post processor.
+		-	Optional: conditional - Required if `watcher.<name>.eventprocessor.type` is defined and value is defined as `python`.
+		-	Ensure that `python` is installed and is in `PATH` so that watcher can invoke python script with python interpreter
+		-	Example: `watcher.python.eventprocessor.script=/tmp/scripts/sample.py`
+-	Type `shell`:
+	-	`watcher.<name>.eventprocessor.script=<script_path>`: Defines script name with full path on file system which will be invoked as shell script post processor.
+		-	Optional: conditional - Required if `watcher.<name>.eventprocessor.type` is defined and value is defined as `shell`.
+		-	Example: `watcher.shell.eventprocessor.script=/tmp/scripts/sample.sh`
+-	**Time Config**: Defines for how long to monitor the resources. This is global setting i.e. applies to all configured watchers.
+	-	`watcher.watch.time.duration`: Number defining how many sec/min/hours/days you want watcher to monitor. Optional: true Default: 1
+	-	`watcher.watch.time.unit`: Unit of time.
+		-	Optional: true
+		-	Default: `M`
+		-	Possible values
+			-	`S` = seconds
+			-	`M` = minutes
+			-	`H` = hours
+			-	`D` = Days
 
 References
 ----------
 
--	[Watch Service](https://docs.oracle.com/javase/tutorial/essential/io/notification.html#overview)
+-	[Watch Service](https://docs.oracle.com/javase/tutorial/essential/io/notification.html#overview): Good reference on how to use `WatcherService` introduced with Java 7. This tool uses the code from the example provided in this link.
