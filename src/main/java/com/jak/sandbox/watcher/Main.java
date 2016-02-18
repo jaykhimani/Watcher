@@ -22,6 +22,17 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
+import static java.util.concurrent.TimeUnit.DAYS;
+import static java.util.concurrent.TimeUnit.HOURS;
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
+
+/**
+ * Main class to boostrap and trigger Watcher to monitor directories
+ * 
+ * @author Jay
+ * @since 1.0
+ */
 public class Main {
 
     private static final String DOT = Pattern.quote(".");
@@ -98,16 +109,16 @@ public class Main {
         String unit = props.getProperty(timeUnit, "M");
         switch (unit) {
             case "M":
-                WATCH_TIME_UNIT = TimeUnit.MINUTES;
+                WATCH_TIME_UNIT = MINUTES;
                 break;
             case "D":
-                WATCH_TIME_UNIT = TimeUnit.DAYS;
+                WATCH_TIME_UNIT = DAYS;
                 break;
             case "H":
-                WATCH_TIME_UNIT = TimeUnit.HOURS;
+                WATCH_TIME_UNIT = HOURS;
                 break;
             case "S":
-                WATCH_TIME_UNIT = TimeUnit.SECONDS;
+                WATCH_TIME_UNIT = SECONDS;
                 break;
             default:
                 throw new RuntimeException(String.format("Invalid Configuration: Unknown watch time unit %s", unit));

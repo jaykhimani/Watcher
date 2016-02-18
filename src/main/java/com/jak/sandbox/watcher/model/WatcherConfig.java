@@ -10,8 +10,18 @@ import java.nio.file.WatchEvent.Kind;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.nio.file.StandardWatchEventKinds.*;
+import static com.jak.sandbox.watcher.helper.AppConstants.COMMA;
+import static com.jak.sandbox.watcher.helper.AppConstants.FWD_SLASH;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
+/**
+ * Holder for watcher configuration.
+ *
+ * @author Jay
+ * @since 1.0
+ */
 public class WatcherConfig {
 
     private String name;
@@ -44,7 +54,7 @@ public class WatcherConfig {
             events.add(ENTRY_MODIFY);
             return this;
         }
-        String[] eventNames = value.split(",");
+        String[] eventNames = value.split(COMMA);
         for (String event : eventNames) {
             switch (event) {
                 case "CREATE":
@@ -73,7 +83,7 @@ public class WatcherConfig {
 
     public WatcherConfig withLogFile(String watcherName, String property) {
         if (property != null && !property.isEmpty()) {
-            String logFile = property + "/" + watcherName + ".log";
+            String logFile = property + FWD_SLASH + watcherName + ".log";
             File file = new File(logFile);
             try {
                 file.getParentFile().mkdirs();

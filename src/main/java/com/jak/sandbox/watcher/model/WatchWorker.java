@@ -23,6 +23,12 @@ import java.util.Map;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
+/**
+ * Worker class responsible to manage one watcher. Each watcher configuration will have its own {@code WatchWorker}
+ * 
+ * @author Jay
+ * @since 1.0
+ */
 public class WatchWorker implements Runnable {
 
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
@@ -66,7 +72,7 @@ public class WatchWorker implements Runnable {
 
     @Override
     public void run() {
-        for (; ; ) {
+        for (;;) {
             // wait for key to be signalled
             WatchKey key;
             try {

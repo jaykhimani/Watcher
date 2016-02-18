@@ -2,6 +2,12 @@ package com.jak.sandbox.watcher.model.processor;
 
 import java.io.IOException;
 
+/**
+ * Event processor responsible to invoke Shell script as event post processor
+ *
+ * @author Jay
+ * @since 1.0
+ */
 public class ShellScriptEventProcessor implements EventProcessor {
 
     private String script;

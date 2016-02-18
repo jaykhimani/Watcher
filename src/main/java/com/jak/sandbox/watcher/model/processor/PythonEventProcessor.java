@@ -2,6 +2,12 @@ package com.jak.sandbox.watcher.model.processor;
 
 import java.io.IOException;
 
+/**
+ * Event processor responsible to invoke Python script as event post processor
+ *
+ * @author Jay
+ * @since 1.0
+ */
 public class PythonEventProcessor implements EventProcessor {
 
     private final String script;

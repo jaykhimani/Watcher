@@ -3,6 +3,16 @@ package com.jak.sandbox.watcher.model.processor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import static com.jak.sandbox.watcher.helper.AppConstants.COMMA;
+import static com.jak.sandbox.watcher.helper.AppConstants.MAIN_METHOD;
+import static com.jak.sandbox.watcher.helper.AppConstants.RESOURCE;
+
+/**
+ * Event processor responsible to invoke Java class as event post processor
+ * 
+ * @author Jay
+ * @since 1.0
+ */
 public class JavaEventProcessor implements EventProcessor {
 
     private final Object instance;
@@ -18,11 +28,11 @@ public class JavaEventProcessor implements EventProcessor {
         this.methodName = methodName;
 
         if (methodName == null || methodName.isEmpty()) {
-            this.methodName = "main";
+            this.methodName = MAIN_METHOD;
             this.defaultMethod = true;
         }
 
-        String[] split = this.methodName.split(",");
+        String[] split = this.methodName.split(COMMA);
         this.methodName = split[0];
         if (split.length > 1) {
             this.param1 = split[1];
@@ -66,13 +76,13 @@ public class JavaEventProcessor implements EventProcessor {
     public void execute(String name, String path) {
         try {
             if (this.param2 != null) {
-                if (param2.equals("RESOURCE")) {
+                if (param2.equals(RESOURCE)) {
                     declaredMethod.invoke(instance, name, path);
                 } else {
                     declaredMethod.invoke(instance, path, name);
                 }
             } else if (this.param1 != null) {
-                if (param1.equals("RESOURCE")) {
+                if (param1.equals(RESOURCE)) {
                     declaredMethod.invoke(instance, path);
                 } else {
                     declaredMethod.invoke(instance, name);
