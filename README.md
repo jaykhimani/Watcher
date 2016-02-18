@@ -120,3 +120,5 @@ References
 ----------
 
 -	[Watch Service](https://docs.oracle.com/javase/tutorial/essential/io/notification.html#overview): Good reference on how to use `WatcherService` introduced with Java 7. This tool uses the code from the example provided in this link.
+-	If you want to setup the project and compile/build, you will need Java 7 - JDK. It can be downloaded from [here](http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html)
+-	If you want to only run the binary donwloaded from `bin` directory of the project then you will only need Java 7 runtime (JRE) which can be dowloaded from [here](http://www.oracle.com/technetwork/java/javase/downloads/jre7-downloads-1880261.html).
