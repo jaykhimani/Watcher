@@ -29,7 +29,9 @@ Usage
 
 -	Using maven - `mvn exec:java -Dexec.mainClass=com.jak.sandbox.watcher.Main -Dwatcher.config=<PathTo_wrapper_config_file>`
 -	Using standalone jar file as self executable
-	-	You can build the binary using
+	-	You can build the binary using `maven` by invoking `mvn clean package`
+	-	Alternatively you can download already packaged binary from `bin` directory of the project.
+	-	Once you have `jar` file built, use `java -Dwatcher.config=<PathTo_wrapper_config_file> -jar wrapper-<MAJOR>.<MINOR>.jar`
 -	**Java Post Processor**
 	-	Watcher can invoke any Java class as post processor.
 	-	To do so config should provide fully qualified class name and optionally method to invoke. Refer `watcher.config format` section.
