@@ -2,19 +2,19 @@ Table Of Content
 ----------------
 
 1.	[Overview](#overview)
-2.	Features
-3.	Requirement
-4.	Usage
-5.	`watcher.config` format
-6.	References
+2.	[Features](#features)
+3.	[Requirement](#requirement)
+4.	[Usage](#usage)
+5.	[`watcher.config` format](#watcherconfig-format)
+6.	[References](#references)
 
 Overview
 --------
 
 A simple light weight Java utility to monitor directory for any change and optionally execute post processor. Post processor can be a Java class, python script or shell script. Post processor is program (java/python/shell script) which will be triggered by Watcher when a certain event (create, delete, modify) occurs as configured for the watcher.
 
-Features/Options
-----------------
+Features
+--------
 
 -	Monitor one or more directories simultaneously through configuration
 -	Configuration Properties File: You can provide elaborate configuration using a properties file. With this you can even configure multiple directories to be monitored and post processed differently (or not at all)
