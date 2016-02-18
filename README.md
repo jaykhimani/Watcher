@@ -90,6 +90,7 @@ Usage
 -	Type `shell`:
 	-	`watcher.<name>.eventprocessor.script=<script_path>`: Defines script name with full path on file system which will be invoked as shell script post processor.
 		-	Optional: conditional - Required if `watcher.<name>.eventprocessor.type` is defined and value is defined as `shell`.
+		-	Ensure that the shell/bash script you want to execute has execute permission.
 		-	Example: `watcher.shell.eventprocessor.script=/tmp/scripts/sample.sh`
 -	**Time Config**: Defines for how long to monitor the resources. This is global setting i.e. applies to all configured watchers.
 	-	`watcher.watch.time.duration`: Number defining how many sec/min/hours/days you want watcher to monitor. Optional: true Default: 1
