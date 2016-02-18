@@ -14,11 +14,22 @@ Features/Options
 -	Configuration Properties File: You can provide elaborate configuration using a properties file. With this you can even configure multiple directories to be monitored and post processed differently (or not at all)
 -	Utility can also optionally generate log files capturing each event and affected resource - directory or file. File is a CSV with `timestamp,event,resource_name` format. If log file is not configured, Watcher will dump this same information on standard output (console).
 
+Requirement
+-----------
+
+-	Main requirement is you need to have Java 7 or higher runtime to execute Watcher.
+-	If you are configuring Java post processor then
+	-	Supplied class should be in classpath so Watch can load/instantiate/invoke it.
+	-	Java class should either have defaut `main` method or a method with one `String` parameter or a method with two `String` parameters.
+-	If you are using `Python` post processor then ensure `Python` is installed and `python` interpreter is in `PATH` so watcher can invoke it.
+-	If you are using `Shell Script` post processor then ensure shell/bash script you want to trigger has execute permission.
+
 Usage
 -----
 
 -	Using maven - `mvn exec:java -Dexec.mainClass=com.jak.sandbox.watcher.Main -Dwatcher.config=<PathTo_wrapper_config_file>`
 -	Using standalone jar file as self executable
+	-	You can build the binary using
 -	**Java Post Processor**
 	-	Watcher can invoke any Java class as post processor.
 	-	To do so config should provide fully qualified class name and optionally method to invoke. Refer `watcher.config format` section.
