@@ -27,13 +27,13 @@ public class JavaEventProcessorTest extends BaseTest {
     @Test
     public void create() throws NoSuchFieldException, IllegalAccessException {
         String className = Main.class.getCanonicalName();
-        victim = new JavaEventProcessor(className, "configure");
+        victim = new JavaEventProcessor(className, "validateJavaVersion");
         assertNotNull(victim);
         Field field = victim.getClass().getDeclaredField("declaredMethod");
         assertNotNull(field);
         field.setAccessible(true);
         Object value = field.get(victim);
-        assertEquals("private static void com.jak.sandbox.watcher.Main.configure()", value.toString());
+        assertEquals("private static void com.jak.sandbox.watcher.Main.validateJavaVersion()", value.toString());
     }
 
     @Test
@@ -50,16 +50,15 @@ public class JavaEventProcessorTest extends BaseTest {
 
     @Test
     public void createWithParam() throws NoSuchFieldException, IllegalAccessException {
-        String className = Main.class.getCanonicalName();
-        victim = new JavaEventProcessor(className, "getWatcherName,EVENT");
+        String className = Sample.class.getCanonicalName();
+        victim = new JavaEventProcessor(className, "someMethod,EVENT");
         assertNotNull(victim);
         Field field = victim.getClass().getDeclaredField("declaredMethod");
         assertNotNull(field);
         field.setAccessible(true);
         Object value = field.get(victim);
-        assertEquals("private static java.lang.String com.jak.sandbox.watcher.Main.getWatcherName(java.lang.String)", value.toString());
+        assertEquals("public void com.jak.sandbox.sample.Sample.someMethod(java.lang.String)", value.toString());
 
-        className = Sample.class.getCanonicalName();
         victim = new JavaEventProcessor(className, "someMethod,EVENT,RESOURCE");
         assertNotNull(victim);
         field = victim.getClass().getDeclaredField("declaredMethod");

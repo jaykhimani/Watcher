@@ -10,6 +10,10 @@ public class Sample {
         System.out.println("Sample:someMethod called");
     }
 
+    public void someMethod(String s) {
+        System.out.println("Sample:someMethod(s) called " + s);
+    }
+
     public void someMethod(String s, String s2) {
         System.out.println("Sample:someMethod(s, s2) called " + s + " - " + s2);
     }
