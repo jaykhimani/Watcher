@@ -37,6 +37,9 @@ public final class ConfigurationParser {
         props.clear();
         loadSystemProperties(props);
 
+        if (holder == null) {
+            holder = new ConfigurationHolder();
+        }
         // Look for command line configuration
         String property = props.getProperty(WATCHER_WATCH_TIME_DURATION);
         if (Utils.isNotEmpty(property)) {
@@ -80,7 +83,9 @@ public final class ConfigurationParser {
         timeUnit = getTimeUnit(unit);
         props.remove(WATCHER_WATCH_TIME_DURATION);
         props.remove(WATCHER_WATCH_TIME_UNIT);
-        ConfigurationHolder holder = new ConfigurationHolder(timeDuration, timeUnit);
+        ConfigurationHolder holder = new ConfigurationHolder();
+        holder.setTimeUnit(timeUnit);
+        holder.setTimeDuration(timeDuration);
         Map<String, WatcherConfig> watcherConfigs = holder.getWatcherConfigs();
         configWatchers(props, watcherConfigs);
         holder.setWatcherConfigs(watcherConfigs);

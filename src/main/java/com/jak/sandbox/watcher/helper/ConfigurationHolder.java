@@ -13,13 +13,8 @@ import java.util.concurrent.TimeUnit;
 public class ConfigurationHolder {
 
     private Map<String, WatcherConfig> watcherConfigs = new HashMap<>();
-    private TimeUnit timeUnit;
-    private Long timeDuration;
-
-    public ConfigurationHolder(Long timeDuration, TimeUnit timeUnit) {
-        this.timeDuration = timeDuration;
-        this.timeUnit = timeUnit;
-    }
+    private TimeUnit timeUnit = TimeUnit.MINUTES;
+    private Long timeDuration = 1L;
 
     public Map<String, WatcherConfig> getWatcherConfigs() {
         return watcherConfigs;
