@@ -16,26 +16,28 @@ A simple light weight Java utility to monitor directory for any change and optio
 Features
 --------
 
--	Monitor one or more directories simultaneously through configuration
--	Configuration Properties File: You can provide elaborate configuration using a properties file. With this you can even configure multiple directories to be monitored and post processed differently (or not at all)
+-	Monitor one or more directories simultaneously through configuration. Configuration can be provided either via command line or configuration properties file.
+-	Command Line Configuration: You can configure watcher using command line arguments. This is the simplest way of configuring watcher. Command line arguments can be mixed with configuration properties file as well. In such case if any configuration conflicts with both command line and configuration properties file, command line arguments takes precedence. Command line arguments are set as system properties. List of supported system properties are same as the keys which are defined under [`watcher.config format`](#watcherconfig-format) section.  
+-	Configuration Properties File: You can provide elaborate configuration using a properties file. With this you can even configure multiple directories to be monitored and post processed differently (or not at all). Refer [`watcher.config format`](#watcherconfig-format) section for complete details.
 -	Utility can also optionally generate log files capturing each event and affected resource - directory or file. File is a CSV with `timestamp,event,resource_name` format. If log file is not configured, Watcher will dump this same information on standard output (console).
+-	Utility also takes care of monitoring any new file created under the directory being monitored or even any new directory created in case of `recursive` flag is set to `true`. Refer [`watcher.config format`](#watcherconfig-format) for details.
 
 Requirement
 -----------
 
 -	Main requirement is you need to have Java 7 or higher runtime to execute Watcher.
 -	If you are configuring Java post processor then
-	-	You should provide fully qualified class name and optionally method to invoke. Refer `watcher.config format` section.
+	-	You should provide fully qualified class name and optionally method to invoke. Refer [`watcher.config format`](#watcherconfig-format) section.
 	-	If no method is provided, default method i.e. `main` will be invoked.
 	-	If you want to invoke custom method with no parameters just provide the name.
 	-	Its also possible to receive event name and/or affected resource as method parameter. In such case you need to provide method name which takes one/two string parameter(s).
 -	If you are using `Python` post processor then
 	-	Ensure `Python` is installed and `python` interpreter is in `PATH` so watcher can invoke it.
-	-	You should provide the complete file system path to the script which should be invoked. Refer `watcher.config format` section for details.
+	-	You should provide the complete file system path to the script which should be invoked. Refer [`watcher.config format`](#watcherconfig-format) section for details.
 	-	Event name and affected resource will be passed as script parameters.
 -	If you are using `Shell Script` post processor then
 	-	Ensure shell/bash script you want to trigger has execute permission.
-	-	You should provide the complete file system path to the script which should be invoked. Refer `watcher.config format` section for details.
+	-	You should provide the complete file system path to the script which should be invoked. Refer [`watcher.config format`](#watcherconfig-format) section for details.
 	-	Event name and affected resource will be passed as script parameters.
 
 Usage
