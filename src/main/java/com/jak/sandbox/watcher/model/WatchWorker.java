@@ -1,5 +1,7 @@
 package com.jak.sandbox.watcher.model;
 
+import com.jak.sandbox.watcher.model.processor.EventProcessor;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.FileSystems;
@@ -112,7 +114,10 @@ public class WatchWorker implements Runnable {
                     logWriter.println(logMsg);
                     logWriter.flush();
                 }
-                this.watcherConfig.getEventProcessor().execute(eventName, child.toString());
+                EventProcessor eventProcessor = this.watcherConfig.getEventProcessor();
+                if (eventProcessor != null) {
+                    eventProcessor.execute(eventName, child.toString());
+                }
 
                 // if directory is created, and watching recursively, then
                 // register it and its sub-directories
